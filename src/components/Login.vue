@@ -87,7 +87,7 @@
 
 <style>
     .card {
-        margin-top: 25%;
+        margin-top: 20%;
     }
 
     body {
