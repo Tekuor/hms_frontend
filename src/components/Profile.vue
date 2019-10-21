@@ -8,7 +8,16 @@
 
             <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                     <span class="navbar-text ml-auto">
-                    <a href="">Logout</a>
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Welcome, {{fullname}}
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item  text-primary" @click="logout()">Logout</a>
+                                </div>
+                            </li>
+                        </ul>
                     </span>
             </div>
         </nav>
@@ -67,7 +76,9 @@
                                     <p class="mb-1">{{m_issue.description|truncate(200)|tailing('...')}}</p>
                                     <div class="mt-4">
                                         <a href="" class="mr-2" data-toggle="modal" data-target="#viewModal" @click="getReplies(m_issue._id)">View</a>
-                                        <a href="" data-toggle="modal" data-target="#editModal" @click="getIssue(m_issue._id)">Edit</a>
+                                        <a href="" class="mr-2" data-toggle="modal" data-target="#editModal" @click="getIssue(m_issue._id)">Edit</a>
+                                        <a href="" data-toggle="modal" data-target="#closeModal" @click="getIssue(m_issue._id)" v-if="m_issue.status == 'open'">Close</a>
+                                        <a href="" data-toggle="modal" data-target="#openModal" @click="getIssue(m_issue._id)" v-if="m_issue.status == 'closed'">Reopen</a>
                                         <div class=" float-right"><a href="" data-toggle="modal" data-target="#deleteModal" @click="getIssue(m_issue._id)"><i class="fas fa-trash"></i></a></div>
                                     </div>
                                     
@@ -161,15 +172,20 @@
                 <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="viewModalLabel">View Medical Issue</h5>
+                    
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div>
                     <h5>{{get_issue.title}}</h5>
+                    </div>
                     <p>{{get_issue.description}}</p>
-
-                    <h6>Replies</h6>
+                    <div>
+                        <b><p class="text-center" v-if="replies === undefined || replies.length == 0">No Replies</p></b>
+                    </div>
+                    <h6 v-if="replies > 0">Replies</h6>
                     <div v-for="reply in replies" v-bind:key="reply">
                         <small class="text-muted">{{reply.commenter}}</small>
                         <small class="text-muted float-right">{{reply.created_at | moment("from", "now")}}</small>
@@ -183,6 +199,7 @@
                             <textarea class="form-control" id="description" rows="3" v-model="reply.description"></textarea>
                         </div>
                         <button type="button" class="btn btn-primary" @click="createReply()">Save</button>
+                        
                     </form>
                 </div>
                 </div>
@@ -237,6 +254,44 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="closeModal" tabindex="-1" role="dialog" aria-labelledby="closeModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="closeModalLabel">Close Issue</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to close <b>{{get_issue.title}}</b> issue?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" @click="closeIssue(get_issue._id)">Yes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="openModal" tabindex="-1" role="dialog" aria-labelledby="openModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="openModalLabel">Close Issue</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to reopen <b>{{get_issue.title}}</b> issue?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" @click="openIssue(get_issue._id)">Yes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                </div>
+                </div>
+            </div>
+        </div>
     </body>
 </template>
 
@@ -259,6 +314,7 @@
                 get_issue: {},
                 reply: {},
                 replies: [],
+                id:"",
             };
 
         },
@@ -269,14 +325,27 @@
             createIssue(){  
                 let id = localStorage.getItem('id')
                 this.issue.user_id = id
+                this.issue.name = this.fullname
+                this.issue.status = "open"
                 service.createIssue(this.issue).then((result)=>{
                     this.showSuccess = true;
+                    this.getIssues()
                     this.issue = {};
                     console.log(result);
                 },(error)=>{
                     console.log(error);
                     this.showError = true;
                 });
+            },
+            getIssues(){ 
+                service.getIssues(this.id).then((result)=>{
+                    this.issues = result.data.data
+                    this.showIssue = true
+                    console.log(result);
+                },(error)=>{
+                    this.showIssue = true
+                    console.log(error);
+            });
             },
             getIssue(pk){ 
                 service.getIssue(pk).then((result)=>{
@@ -297,11 +366,34 @@
             },
             deleteIssue(pk){ 
                 service.deleteIssue(pk).then((result)=>{
+                    this.getIssues()
                     this.showSuccess = true;
                     console.log(result);
                 },(error)=>{
                     this.showError = true;
                     console.log(error);
+                });
+            },
+            closeIssue(){  
+                this.get_issue.status = "closed"
+                service.updateIssue(this.get_issue).then((result)=>{
+                    console.log(result);
+                    this.getIssues()
+                    this.showSuccess = true;
+                },(error)=>{
+                    console.log(error);
+                    this.showError = true;
+                });
+            },
+            openIssue(){  
+                this.get_issue.status = "open"
+                service.updateIssue(this.get_issue).then((result)=>{
+                    console.log(result);
+                    this.getIssues()
+                    this.showSuccess = true;
+                },(error)=>{
+                    console.log(error);
+                    this.showError = true;
                 });
             },
             createReply(){  
@@ -340,15 +432,19 @@
             hidesuccess(){
                 this.showSuccess = false;
             },
+            logout(){
+            localStorage.clear();
+            this.$router.push({path:'login'})
+        }
         },
         mounted() {
-            let id = localStorage.getItem('id')
-            service.getUser(id).then((user)=>{
+            this.id = localStorage.getItem('id')
+            service.getUser(this.id).then((user)=>{
                 this.user = user.data;
                 this.fullname = this.user.first_name + " "+this.user.last_name
                 console.log(this.user)
             }),
-            service.getIssues(id).then((result)=>{
+            service.getIssues(this.id).then((result)=>{
                     this.issues = result.data.data
                     this.showIssue = true
                     console.log(result);
@@ -373,5 +469,11 @@
     #details{
         margin-top: 3%
     }
+    #notification { 
+            position: absolute; 
+            top: 10%; 
+            right: 2%; 
+            
+        }
 
 </style>

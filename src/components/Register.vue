@@ -2,12 +2,12 @@
     <body>
         <div class="container">
             <div class="row">
-            <div class="alert alert-danger col-md-3" v-show="showError" id="notification">
+            <div class="alert alert-danger col-md-3" v-show="showError" id="notify">
                 <strong>Unsuccessful</strong>
                 <button type="button" class="btn" @click="hidemessage()"><i class="fas fa-times" id="error"></i></button>
             </div>
 
-            <div class="alert alert-success col-md-3" v-show="showSuccess" id="notification">
+            <div class="alert alert-success col-md-3" v-show="showSuccess" id="notify">
                 <button type="button" class="btn" id="success"  @click="hidesuccess()"><i class="fas fa-times" id="success"></i></button>
                 <strong>Successful</strong>
             </div>
@@ -53,10 +53,6 @@
                                         <label for="password">Password</label>
                                         <input type="password" class="form-control" v-model="user.password" id="password" placeholder="Password">
                                     </div>
-                                    <div class="form-group col-md-12">
-                                        <label for="cpassword">Confirm Password</label>
-                                        <input type="password" class="form-control" id="cpassword" placeholder="Confirm Password">
-                                    </div>
                                 </div>
                                 <p class="card-text"><small class="text-muted">Already a user? <router-link to="/login">Login</router-link></small></p>
                                 <button type="submit" class="btn btn-primary" @click="register()">Submit</button>
@@ -82,7 +78,7 @@
         return {
             showError: false,
             showSuccess: false,
-            user: {}
+            user: {},
         };
     },
     methods: {
@@ -117,7 +113,7 @@
     body {
         background-color: #F8F8FF;
     }
-    #notification { 
+    #notify { 
             position: absolute; 
             top: 2%; 
             right: 2%; 

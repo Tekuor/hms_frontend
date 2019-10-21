@@ -6,14 +6,15 @@ import '@fortawesome/fontawesome-free/css/all.css'
 import '@fortawesome/fontawesome-free/js/all.js'
 import VueRouter from 'vue-router';
 
-import routes from './routers';
+import router from './routers';
 
 Vue.config.productionTip = false;
 
 Vue.use(VueRouter);
 Vue.use(require('vue-moment'));
 
-const router = new VueRouter({routes});
+
+//const router = new VueRouter({routes});
 
 new Vue({
   router,

@@ -1,5 +1,6 @@
 import axios from 'axios';
-const API_URL = 'https://hmsbackend.herokuapp.com/api';
+//const API_URL = 'https://hmsbackend.herokuapp.com/api';
+const API_URL = 'http://localhost:4000/api';
 
 export class apiService{
 
@@ -64,6 +65,16 @@ updateUser(user){
 getUsers(){
     const url = `${API_URL}/users/`;
     return axios.get(url).then(response => response.data);
+}
+
+allIssues(){
+    const url = `${API_URL}/all/issues/`;
+    return axios.get(url).then(response => response.data);
+}
+
+closeIssue(issue){
+    const url = `${API_URL}/close/issue/${issue._id}`;
+    return axios.put(url,issue);
 }
 
 }

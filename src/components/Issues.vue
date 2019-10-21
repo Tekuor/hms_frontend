@@ -12,7 +12,7 @@
                             <router-link active-class="active" to="/patients"><a class="nav-link">Patients</a></router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link active-class="active" to="/issues"><a class="nav-link" href="#">Issues</a></router-link>
+                            <router-link active-class="active" to="/issues"><a class="nav-link">Issues</a></router-link>
                         </li>
                     </ul>
                     <span class="navbar-text ml-auto">
@@ -29,66 +29,39 @@
                     </span>
             </div>
         </nav>
-        <div class="container-fluid">
-
-            <div class="alert alert-danger col-md-3" v-show="showError" id="notification">
-                <strong>Unsuccessful</strong>
-                <button type="button" class="btn" @click="hidemessage()"><i class="fas fa-times" id="error"></i></button>
-            </div>
-
-            <div class="alert alert-success col-md-3" v-show="showSuccess" id="notification">
-                <button type="button" class="btn" @click="hidesuccess()"><i class="fas fa-times" id="success"></i></button>
-                <strong>Successful</strong>
-            </div>
-            <div class="row">
-                <div class="col-sm-12 col-md-2 offset-md-2" id="details">
-                    <div class="card ">
+        <div class="container">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h5>Issues</h5>
+                    <p class="text-muted">List of all medical issues reported by patients</p>
+                        <div class="d-flex justify-content-center" v-if="!showIssue">
+                            <div class="spinner-grow" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                        <div v-if="showIssue">
                         <div>
-                        <avatar :username="fullname" :size=100 color="white" class="mx-auto mt-4" style="width: 100px;"></avatar>
+                        <b><p class="text-center" v-if="issues === undefined || issues.length == 0">No Medical Issues Reported</p></b>
                         </div>
-                        <div class="card-body">
-                            <h5 class="card-title text-center">{{user.first_name}} {{user.last_name}}</h5>
-                                <p class="text-center">{{user.email}}</p>
-                                <p class="text-center">{{user.phone_number}}</p>
-                                <p class="text-center">{{user.dob | moment("from", "now",true)}}</p>
-                                <p class="text-center">{{user.gender}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-6"  style="max-width:900px;margin-top:-5%">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-center" v-if="!showIssue">
-                                <div class="spinner-grow" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            </div>
-                            <div v-if="showIssue">
-                            <div>
-                                <b><p class="text-center" v-if="issues === undefined || issues.length == 0">No medical issues logged</p></b>
-                            </div>
-                            <h4 class="card-title" v-if="issues.length > 0">Issues</h4>
-                            <div class="list-group">
-                                <a v-for="m_issue in issues" v-bind:key="m_issue" class="issues list-group-item list-group-item-action" >
-                                    <div class="d-flex w-100 justify-content-between">
+                        <div class="list-group">
+                            <a v-for="m_issue in issues" v-bind:key="m_issue" class="issues list-group-item list-group-item-action" >
+                                <div class="d-flex w-100 justify-content-between">
                                     <h5 class="mb-1">{{m_issue.title}}</h5>
                                     <small class="text-muted">{{ m_issue.created_at | moment("from", "now") }}</small>
-                                    </div>
-                                    <p class="mb-1">{{m_issue.description|truncate(200)|tailing('...')}}</p>
-                                    <div class="mt-4">
-                                        <a href="" class="mr-2" data-toggle="modal" data-target="#viewModal" @click="getReplies(m_issue._id)">View</a>
-                                        <a href="" data-toggle="modal" data-target="#closeModal" @click="getIssue(m_issue._id)" v-if="m_issue.status == 'open'">Close</a>
-                                        <a href="" data-toggle="modal" data-target="#openModal" @click="getIssue(m_issue._id)" v-if="m_issue.status == 'closed'">Reopen</a>
-                                    </div>
-                                    
-                                </a>
-                            </div>
-                            </div>
+                                </div>
+                                <p class="text-muted">{{m_issue.name}}</p>
+                                <p class="mb-1">{{m_issue.description|truncate(200)|tailing('...')}}</p>
+                                <div class="mt-4">
+                                    <a href="" class="mr-2" data-toggle="modal" data-target="#viewModal" @click="getReplies(m_issue._id)">View</a>
+                                    <a href="" data-toggle="modal" data-target="#closeModal" @click="getIssue(m_issue._id)" v-if="m_issue.status == 'open'">Close</a>
+                                    <a href="" data-toggle="modal" data-target="#openModal" @click="getIssue(m_issue._id)" v-if="m_issue.status == 'closed'">Reopen</a>
+                                </div>
+                            </a>
                         </div>
-                    </div>
+                        </div>
                 </div>
             </div>
-        </div>
+        </div>   
         <div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -100,6 +73,7 @@
                 </div>
                 <div class="modal-body">
                     <h5>{{get_issue.title}}</h5>
+                    <p class="text-muted">{{get_issue.name}}</p>
                     <p>{{get_issue.description}}</p>
 
                     <h6>Replies</h6>
@@ -164,55 +138,42 @@
 
 <script>
     import {apiService} from '../services/apiService';
-    import Avatar from 'vue-avatar'
 
     const service = new apiService();
 
 export default {
+    
     data() {
-            return {
-                users:[],
-                number:0,
-                showIssue:false,
-                user: {},
-                fullname: "",
-                issues: [],
-                get_issue: {},
-                reply: {},
-                replies: [],
-                username: '',
-            };
+        return {
+            showIssue:false,
+            issues: [],
+            get_issue: {},
+            reply: {},
+            replies: [],
+            username: '',
+        };
 
-        },
-        components: {
-            Avatar,
-        },
-        methods: {
-            getIssue(pk){ 
-                service.getIssue(pk).then((result)=>{
-                    this.get_issue = result.data
+    },
+    methods: {
+        getIssues(){
+            service.allIssues().then((result)=>{
+                    this.issues = result.data
+                    this.showIssue = true
                     console.log(result);
                 },(error)=>{
+                    this.showIssue = true
                     console.log(error);
-                });
-            },
-            getIssues(){
-                service.getIssues(this.$route.params.id).then((result)=>{
-                this.issues = result.data.data
-                this.showIssue = true
-                console.log(result);
-                },(error)=>{
-                this.showIssue = true
-                console.log(error);
             });
-            },
-            closeIssue(){  
+        },
+        closeIssue(){  
                 this.get_issue.status = "closed"
                 service.updateIssue(this.get_issue).then((result)=>{
                     console.log(result);
                     this.getIssues()
+                    this.showSuccess = true;
                 },(error)=>{
                     console.log(error);
+                    this.showError = true;
                 });
             },
             openIssue(){  
@@ -220,11 +181,21 @@ export default {
                 service.updateIssue(this.get_issue).then((result)=>{
                     console.log(result);
                     this.getIssues()
+                    this.showSuccess = true;
                 },(error)=>{
                     console.log(error);
+                    this.showError = true;
                 });
             },
-            getReplies(pk){
+        getIssue(pk){ 
+            service.getIssue(pk).then((result)=>{
+            this.get_issue = result.data
+            console.log(result);
+            },(error)=>{
+            console.log(error);
+            });
+        },
+        getReplies(pk){
                 this.getIssue(pk)
                 service.getReplies(pk).then((result)=>{
                     this.replies = result.data.data
@@ -232,44 +203,34 @@ export default {
                 },(error)=>{
                     console.log(error);
             });
-            },
-            createReply(){
-                let name = localStorage.getItem('name')
-                this.reply.commenter = "Dr. "+ name
-                this.reply.issue_id = this.get_issue._id
-                service.createReply(this.reply).then((result)=>{
-                    this.reply.description = '';
-                    this.getReplies(this.get_issue._id)
+        },
+        logout(){
+            localStorage.clear();
+            this.$router.push({path:'login'})
+        }
+    },
+    mounted() {
+            this.username = localStorage.getItem('name')
+            service.allIssues().then((result)=>{
+                    this.issues = result.data
+                    this.showIssue = true
                     console.log(result);
                 },(error)=>{
+                    this.showIssue = true
                     console.log(error);
-                });
+            });
+        },
+        filters: {
+            truncate: function(value, limit) {
+            return value.substring(0, limit)
             },
-            logout(){
-                localStorage.clear();
-                this.$router.push({path:'login'})
+            tailing: function(value, tail) {
+            return value + tail;
             }
         },
-    mounted(){
-        this.username = localStorage.getItem('name')
-        let id = this.$route.params.id
-        service.getUser(id).then((user)=>{
-            this.user = user.data;
-            this.fullname = this.user.first_name + " "+this.user.last_name
-            console.log(this.user)
-        }),
-        service.getIssues(id).then((result)=>{
-            this.issues = result.data.data
-            this.showIssue = true
-            console.log(result);
-            },(error)=>{
-            this.showIssue = true
-            console.log(error);
-        });
-    }
-    
 }
 </script>
+
 <style>
 
 </style>

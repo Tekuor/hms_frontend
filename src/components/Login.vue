@@ -60,14 +60,16 @@
     login(){
         service.login(this.user).then((result)=>{
             this.showSuccess = true
+            localStorage.setItem('id',result.data.data._id);
+            localStorage.setItem('type',result.data.data.user_type);
+            localStorage.setItem('name',result.data.data.first_name+" "+result.data.data.last_name);
+            localStorage.setItem('isLoggedIn','yes');
             if(result.data.data.user_type == 'doctor'){
                 this.$router.push({ path:'patients'});
             }
             else{
                 this.$router.push({ path:'profile'});
             }
-            localStorage.setItem('id',result.data.data._id);
-            localStorage.setItem('name',result.data.data.first_name+" "+result.data.data.last_name);
         },(error)=>{
             console.log(error);
             this.showError = true;
@@ -86,10 +88,6 @@
 </script>
 
 <style>
-    .card {
-        margin-top: 20%;
-    }
-
     body {
         background-color: #F8F8FF;
     }
