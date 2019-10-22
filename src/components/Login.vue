@@ -68,6 +68,7 @@
             localStorage.setItem('type',result.data.data.user_type);
             localStorage.setItem('name',result.data.data.first_name+" "+result.data.data.last_name);
             localStorage.setItem('isLoggedIn','yes');
+            localStorage.setItem('token',result.data.token);
             if(result.data.data.user_type == 'doctor'){
                 this.$router.push({ path:'patients'});
             }
