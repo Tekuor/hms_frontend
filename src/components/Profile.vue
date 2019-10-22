@@ -104,11 +104,11 @@
                         <h6>Describe any medical issues you have in the form below</h6>
                         <div class="form-group">
                             <label for="title">Title</label>
-                            <input type="text" class="form-control" id="title" v-model="issue.title">
+                            <input type="text" class="form-control" required id="title" v-model="issue.title">
                         </div>
                         <div class="form-group">
                             <label for="description">Description</label>
-                            <textarea class="form-control" id="description" rows="3" v-model="issue.description"></textarea>
+                            <textarea class="form-control" id="description" required rows="3" v-model="issue.description"></textarea>
                         </div>
                     </form>
                 </div>
@@ -277,7 +277,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="openModalLabel">Close Issue</h5>
+                    <h5 class="modal-title" id="openModalLabel">Reopen Issue</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>

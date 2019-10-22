@@ -31,9 +31,20 @@
         </nav>
         <div class="container">
             <div class="card mt-5">
+                <div class="row">
+                    <div class="col-4 mt-4 ml-auto mr-4">
+                <select name="statusChange" @change="onChange($event)" class="form-control float-right" v-model="statusChange">
+                    <option value="" disabled>Filter by status</option>
+                    <option value="all">All</option>
+                    <option value="open">Open</option>
+                    <option value="closed">Closed</option>
+                    </select>
+                    </div>
+                </div>
                 <div class="card-body">
                     <h5>Issues</h5>
                     <p class="text-muted">List of all medical issues reported by patients</p>
+                    
                         <div class="d-flex justify-content-center" v-if="!showIssue">
                             <div class="spinner-grow" role="status">
                                 <span class="sr-only">Loading...</span>
@@ -151,6 +162,7 @@ export default {
             reply: {},
             replies: [],
             username: '',
+            statusChange: ''
         };
 
     },
@@ -203,6 +215,27 @@ export default {
                 },(error)=>{
                     console.log(error);
             });
+        },
+        onChange(event) {
+            if(event.target.value == 'open'){
+                service.issueStatus(event.target.value).then((result)=>{
+                    this.issues = result.data.data
+                    console.log(result);
+                },(error)=>{
+                    console.log(error);
+            });
+            }
+            else if(event.target.value == 'closed'){
+                service.issueStatus(event.target.value).then((result)=>{
+                    this.issues = result.data.data
+                    console.log(result);
+                },(error)=>{
+                    console.log(error);
+            });
+            }
+            else{
+                this.getIssues()
+            }
         },
         logout(){
             localStorage.clear();

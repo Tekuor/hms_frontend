@@ -24,38 +24,44 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label for="first_name">First name</label>
-                                        <input type="text" class="form-control" v-model="user.first_name" id="first_name" placeholder="Enter first name">
+                                        <input type="text" class="form-control" required v-model="user.first_name" id="first_name" placeholder="Enter first name">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="last_name">Last name</label>
-                                        <input type="text" class="form-control" v-model="user.last_name" id="last_name" placeholder="Enter last name">
+                                        <input type="text" class="form-control" required v-model="user.last_name" id="last_name" placeholder="Enter last name">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="email">Email</label>
-                                        <input type="email" class="form-control" v-model="user.email" id="email" placeholder="Enter email">
+                                        <input type="email" class="form-control" required v-model="user.email" id="email" placeholder="Enter email">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="phone_number">Phone number</label>
-                                        <input type="tel" class="form-control" v-model="user.phone_number" id="phone_number" placeholder="Enter phone number">
+                                        <input type="tel" class="form-control" required v-model="user.phone_number" id="phone_number" placeholder="Enter phone number">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="dob">Date of Birth</label>
-                                        <input type="date" class="form-control" v-model="user.dob" id="dob">
+                                        <input type="date" class="form-control" required v-model="user.dob" id="dob">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="gender">Select gender</label>
-                                        <select class="form-control" v-model="user.gender" id="gender">
+                                        <select class="form-control" v-model="user.gender" required id="gender">
                                         <option>Male</option>
                                         <option>Female</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-12">
                                         <label for="password">Password</label>
-                                        <input type="password" class="form-control" v-model="user.password" id="password" placeholder="Password">
+                                        <input type="password" class="form-control" v-model="user.password" required id="password" placeholder="Password">
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <label for="password">Password</label>
+                                        <input type="password" class="form-control" v-on:keyup="confirmPassword()" v-model="cpassword" required  id="cpassword" placeholder="Confirm Password">
+                                        <p v-show="!confirmed" class="text-danger">Passwords do not match</p>
                                     </div>
                                 </div>
                                 <p class="card-text"><small class="text-muted">Already a user? <router-link to="/login">Login</router-link></small></p>
-                                <button type="submit" class="btn btn-primary" @click="register()">Submit</button>
+                                <button type="submit" class="btn btn-primary" @click="register()" v-show="!loading">Submit</button>
+                                <button disabled class="btn btn-primary" v-show="loading">Loading...</button>
                             </form>
                         </div>
                     </div>
@@ -79,21 +85,35 @@
             showError: false,
             showSuccess: false,
             user: {},
+            cpassword:"",
+            confirmed: true,
+            loading: false
         };
     },
     methods: {
     register(){
+        this.loading = false
         this.user.user_type="patient"
         service.register(this.user).then((result)=>{
+            this.loading = false
             this.showSuccess = true;
             this.user = {};
             this.$router.push({ path:'login'});
             console.log(result);
         },(error)=>{
+            this.loading = false
             console.log(error);
             this.showError = true;
 
         });
+    },
+    confirmPassword(){
+            if(this.user.password != this.cpassword){
+                this.confirmed = false
+            }
+            else{
+                this.confirmed = true
+            }
     },
     hidemessage(){
             this.showError = false;

@@ -23,14 +23,15 @@
                             <form class="col-10">
                                 <div class="form-group">
                                     <label for="email">Email address</label>
-                                    <input type="email" class="form-control" v-model="user.email" id="email" placeholder="Enter email">
+                                    <input type="email" class="form-control" required v-model="user.email" id="email" placeholder="Enter email">
                                 </div>
                                 <div class="form-group">
                                     <label for="password">Password</label>
-                                    <input type="password" class="form-control" v-model="user.password" id="password" placeholder="Password">
+                                    <input type="password" class="form-control" required v-model="user.password" id="password" placeholder="Password">
                                 </div>
                                 <p class="card-text"><small class="text-muted">Not a user? <router-link to="/register">Register</router-link></small></p>
-                                <button type="submit" class="btn btn-primary" @click="login()">Submit</button>
+                                <button type="submit" class="btn btn-primary" @click="login()" v-show="!loading">Submit</button>
+                                <button disabled class="btn btn-primary" v-show="loading">Loading...</button>
                             </form>
                         </div>
                     </div>
@@ -53,13 +54,16 @@
         return {
             showError: false,
             showSuccess: false,
-            user: {}
+            user: {},
+            loading: false
         };
     },
     methods: {
     login(){
+        this.loading = true
         service.login(this.user).then((result)=>{
             this.showSuccess = true
+            this.loading = false
             localStorage.setItem('id',result.data.data._id);
             localStorage.setItem('type',result.data.data.user_type);
             localStorage.setItem('name',result.data.data.first_name+" "+result.data.data.last_name);
@@ -72,6 +76,7 @@
             }
         },(error)=>{
             console.log(error);
+            this.loading = false
             this.showError = true;
 
         });
