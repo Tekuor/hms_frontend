@@ -176,7 +176,7 @@ export default {
                     this.showError = true;
                 });
             },
-            openIssue(){  
+        openIssue(){  
                 this.get_issue.status = "open"
                 service.updateIssue(this.get_issue).then((result)=>{
                     console.log(result);
@@ -186,7 +186,7 @@ export default {
                     console.log(error);
                     this.showError = true;
                 });
-            },
+        },
         getIssue(pk){ 
             service.getIssue(pk).then((result)=>{
             this.get_issue = result.data
