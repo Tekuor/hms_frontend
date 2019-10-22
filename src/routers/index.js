@@ -12,6 +12,10 @@ import VueRouter from 'vue-router';
 
 const routes = [
     { 
+        path: '/', 
+        component: Login
+    },
+    { 
         path: '/login', 
         component: Login
     },
