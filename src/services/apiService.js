@@ -1,6 +1,6 @@
 import axios from 'axios';
-//const API_URL = 'https://hmsbackend.herokuapp.com/api';
-const API_URL = 'http://localhost:4000/api';
+const API_URL = 'https://hmsbackend.herokuapp.com/api';
+//const API_URL = 'http://localhost:4000/api';
 
 export class apiService{
 
